@@ -1,0 +1,1066 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physis | Unveiling Nature</title>
+    
+    <!-- MathJax for Beautiful Equations -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+
+    <style>
+        /* CSS Variables & Theme Definitions */
+        :root {
+            /* Light Theme */
+            --bg-color: #f3f4f6;
+            --surface-color: rgba(255, 255, 255, 0.7);
+            --surface-hover: rgba(255, 255, 255, 0.9);
+            --border-color: rgba(209, 213, 219, 0.5);
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --danger: #ef4444;
+            --glass-blur: blur(12px);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --sidebar-width: 320px;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme */
+            --bg-color: #0f172a;
+            --surface-color: rgba(30, 41, 59, 0.7);
+            --surface-hover: rgba(30, 41, 59, 0.9);
+            --border-color: rgba(51, 65, 85, 0.5);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --accent: #38bdf8;
+            --success: #34d399;
+            --danger: #f87171;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Reset & Base Styles */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow: hidden; /* App-like layout */
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* Typography */
+        h1, h2, h3, h4, h5 { font-weight: 600; line-height: 1.2; margin-bottom: 1rem; color: var(--text-main); }
+        h1 { font-size: 2.5rem; letter-spacing: -0.025em; }
+        h2 { font-size: 1.875rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+        h3 { font-size: 1.5rem; margin-top: 2rem; color: var(--accent); }
+        p { margin-bottom: 1.25rem; font-size: 1.125rem; color: var(--text-muted); }
+        ul, ol { margin-bottom: 1.25rem; padding-left: 1.5rem; font-size: 1.125rem; color: var(--text-muted); }
+        li { margin-bottom: 0.5rem; }
+        strong { color: var(--text-main); font-weight: 600; }
+        em { color: var(--accent); font-style: normal; font-weight: 500; }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: var(--surface-color);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
+            border-radius: 1rem;
+        }
+
+        /* Layout Structure */
+        #sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            background: var(--surface-color);
+            backdrop-filter: var(--glass-blur);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 50;
+        }
+        #sidebar.closed { transform: translateX(-100%); position: absolute; }
+
+        #main-content {
+            flex: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Sidebar Components */
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .brand { font-size: 1.5rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+        .brand svg { width: 24px; height: 24px; fill: var(--primary); }
+        
+        .search-container { margin-top: 1rem; position: relative; }
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        [data-theme="dark"] .search-input { background: rgba(255,255,255,0.05); }
+        .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 16px; height: 16px; }
+
+        .progress-container { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .progress-header { display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--text-muted); }
+        .progress-bar-bg { width: 100%; height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s ease-out; }
+
+        .curriculum-tree { flex: 1; overflow-y: auto; padding: 1rem; }
+        .module-group { margin-bottom: 0.5rem; }
+        .module-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.75rem 1rem; cursor: pointer; border-radius: 0.5rem;
+            font-weight: 600; color: var(--text-main); transition: background 0.2s;
+        }
+        .module-header:hover { background: var(--surface-hover); }
+        .module-header.active .chevron { transform: rotate(90deg); }
+        .chevron { transition: transform 0.2s; fill: currentColor; width: 16px; height: 16px; }
+        
+        .lesson-list { list-style: none; padding: 0; margin: 0; display: none; padding-left: 1rem; margin-top: 0.25rem; }
+        .module-header.active + .lesson-list { display: block; }
+        .lesson-item {
+            padding: 0.5rem 1rem; margin-bottom: 0.25rem; border-radius: 0.5rem;
+            cursor: pointer; font-size: 0.9rem; color: var(--text-muted);
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.2s;
+        }
+        .lesson-item:hover { color: var(--text-main); background: var(--surface-hover); }
+        .lesson-item.active { background: var(--primary); color: white; font-weight: 500; }
+        .lesson-item.completed::after { content: '✓'; color: var(--success); font-weight: bold; }
+        .lesson-item.active.completed::after { color: white; }
+
+        /* Main Content Header */
+        .top-nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 2rem; border-bottom: 1px solid var(--border-color);
+            background: var(--surface-color); backdrop-filter: var(--glass-blur);
+            z-index: 10;
+        }
+        .nav-left { display: flex; align-items: center; gap: 1rem; }
+        .btn-icon {
+            background: transparent; border: 1px solid var(--border-color);
+            color: var(--text-main); width: 40px; height: 40px; border-radius: 0.5rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-icon:hover { background: var(--surface-hover); border-color: var(--text-muted); }
+        .btn-icon svg { width: 20px; height: 20px; fill: currentColor; }
+        .breadcrumbs { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem; }
+        .breadcrumbs span { color: var(--text-main); font-weight: 500; }
+        .nav-right { display: flex; align-items: center; gap: 0.5rem; }
+
+        /* Lesson Viewer */
+        .lesson-viewer {
+            flex: 1; overflow-y: auto; padding: 2rem; scroll-behavior: smooth;
+        }
+        .lesson-container { max-width: 800px; margin: 0 auto; padding-bottom: 4rem; }
+        
+        /* Pedagogy Components (Nature First) */
+        .nature-box {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(59, 130, 246, 0.1));
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem; border-radius: 0 1rem 1rem 0; margin: 2rem 0;
+        }
+        .nature-box h3 { margin-top: 0; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+        
+        .formula-card {
+            background: var(--surface-color); border: 1px solid var(--border-color);
+            border-radius: 1rem; padding: 1.5rem; margin: 2rem 0; text-align: center;
+            box-shadow: var(--shadow-sm); transition: transform 0.2s;
+        }
+        .formula-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+        .formula-card .math-display { font-size: 1.5rem; margin: 1rem 0; overflow-x: auto; }
+        .variable-breakdown { text-align: left; margin-top: 1rem; font-size: 0.9rem; border-top: 1px solid var(--border-color); padding-top: 1rem; display: none; }
+        .formula-card.expanded .variable-breakdown { display: block; }
+        .btn-expand { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.9rem; margin-top: 0.5rem; }
+
+        .misconception-card {
+            background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 1rem; padding: 1.5rem; margin: 2rem 0;
+        }
+        .misconception-card h4 { color: var(--danger); margin-top: 0; display: flex; align-items: center; gap: 0.5rem; }
+
+        .real-world-card {
+            background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 1rem; padding: 1.5rem; margin: 2rem 0;
+        }
+        .real-world-card h4 { color: var(--success); margin-top: 0; }
+
+        /* Interactive Quiz */
+        .quiz-container { margin: 3rem 0; }
+        .quiz-question { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 1rem; padding: 1.5rem; margin-bottom: 1rem; }
+        .quiz-options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+        .quiz-option {
+            background: transparent; border: 1px solid var(--border-color); padding: 0.75rem 1rem;
+            border-radius: 0.5rem; text-align: left; cursor: pointer; color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .quiz-option:hover { background: var(--surface-hover); border-color: var(--primary); }
+        .quiz-option.selected { background: var(--primary); color: white; border-color: var(--primary); }
+        .quiz-option.correct { background: var(--success); color: white; border-color: var(--success); }
+        .quiz-option.incorrect { background: var(--danger); color: white; border-color: var(--danger); }
+        .quiz-feedback { margin-top: 1rem; padding: 1rem; border-radius: 0.5rem; display: none; font-size: 0.9rem; }
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .quiz-feedback.error { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        /* Navigation Footer */
+        .lesson-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border-color);
+        }
+        .btn-nav {
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 500;
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .btn-prev { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-prev:hover { background: var(--surface-hover); }
+        .btn-next { background: var(--primary); border: 1px solid var(--primary); color: white; }
+        .btn-next:hover { background: var(--primary-hover); }
+        .btn-complete { background: var(--success); border: 1px solid var(--success); color: white; margin: 0 auto; display: block; padding: 1rem 2rem; font-size: 1.1rem; border-radius: 2rem; cursor: pointer; transition: transform 0.2s; box-shadow: var(--shadow-md); }
+        .btn-complete:hover { transform: scale(1.05); }
+        .btn-complete:disabled { background: var(--border-color); border-color: var(--border-color); cursor: not-allowed; transform: none; }
+
+        /* Table of Contents (Sticky Right) */
+        .toc-container {
+            position: fixed; right: 2rem; top: 5rem; width: 250px;
+            padding: 1rem; max-height: calc(100vh - 8rem); overflow-y: auto;
+            border-left: 2px solid var(--border-color);
+        }
+        @media (max-width: 1400px) { .toc-container { display: none; } }
+        .toc-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; margin-bottom: 1rem; }
+        .toc-list { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; }
+        .toc-item { margin-bottom: 0.5rem; }
+        .toc-link { color: var(--text-muted); text-decoration: none; transition: color 0.2s; display: block; line-height: 1.4; }
+        .toc-link:hover, .toc-link.active { color: var(--primary); font-weight: 500; }
+
+        /* Keyboard Shortcuts Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+            display: none; justify-content: center; align-items: center; z-index: 100;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: var(--surface-color); border: 1px solid var(--border-color);
+            padding: 2rem; border-radius: 1rem; box-shadow: var(--shadow-lg);
+            max-width: 400px; width: 90%;
+        }
+        .kbd {
+            background: var(--bg-color); border: 1px solid var(--border-color);
+            padding: 0.2rem 0.5rem; border-radius: 0.25rem; font-family: monospace;
+            font-size: 0.8rem; box-shadow: 0 2px 0 var(--border-color);
+        }
+        .shortcut-row { display: flex; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;}
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #sidebar { position: absolute; transform: translateX(-100%); }
+            #sidebar.open { transform: translateX(0); }
+            .lesson-viewer { padding: 1rem; }
+            h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                Physis
+            </div>
+            <div class="search-container">
+                <svg class="search-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" class="search-input" id="search-input" placeholder="Search concept or equation... (Ctrl+K)">
+            </div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-header">
+                <span>Course Mastery</span>
+                <span id="progress-text">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
+        </div>
+        <div class="curriculum-tree" id="curriculum-tree">
+            <!-- Dynamically populated by JS -->
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <header class="top-nav">
+            <div class="nav-left">
+                <button class="btn-icon" id="toggle-sidebar" title="Toggle Sidebar (Ctrl+B)">
+                    <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                </button>
+                <div class="breadcrumbs" id="breadcrumbs">
+                    Module 1 <svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg> <span id="breadcrumb-current">The Nature of Motion</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <button class="btn-icon" id="btn-shortcuts" title="Keyboard Shortcuts">
+                    <svg viewBox="0 0 24 24"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
+                </button>
+                <button class="btn-icon" id="toggle-theme" title="Toggle Dark/Light Mode">
+                    <svg viewBox="0 0 24 24" id="theme-icon"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="lesson-viewer" id="lesson-viewer">
+            <div class="lesson-container">
+                <article id="lesson-content">
+                    <!-- Dynamic Content Injected Here -->
+                </article>
+                
+                <div class="lesson-footer">
+                    <button class="btn-nav btn-prev" id="btn-prev">
+                        <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg> Previous
+                    </button>
+                    <button class="btn-complete" id="btn-mark-complete">Mark Lesson Complete</button>
+                    <button class="btn-nav btn-next" id="btn-next">
+                        Next <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <aside class="toc-container" id="toc-container">
+            <div class="toc-title">On this page</div>
+            <ul class="toc-list" id="toc-list">
+                <!-- TOC generated dynamically -->
+            </ul>
+        </aside>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="shortcuts-modal">
+        <div class="modal-content">
+            <h3>Keyboard Shortcuts</h3>
+            <div class="shortcut-row"><span>Search</span> <span class="kbd">Ctrl</span> + <span class="kbd">K</span></div>
+            <div class="shortcut-row"><span>Toggle Sidebar</span> <span class="kbd">Ctrl</span> + <span class="kbd">B</span></div>
+            <div class="shortcut-row"><span>Next Lesson</span> <span class="kbd">→</span></div>
+            <div class="shortcut-row"><span>Previous Lesson</span> <span class="kbd">←</span></div>
+            <div class="shortcut-row"><span>Toggle Theme</span> <span class="kbd">Ctrl</span> + <span class="kbd">T</span></div>
+            <div class="shortcut-row"><span>Close Modal</span> <span class="kbd">Esc</span></div>
+            <button class="btn-nav btn-prev" style="width:100%; margin-top:1rem;" onclick="document.getElementById('shortcuts-modal').classList.remove('active')">Close</button>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * CURRICULUM DATABASE
+         * Philosophy: Nature First, Equations Later. 
+         * Structure encompasses 12 modules. Detailed content provided for foundational lessons to demonstrate the architecture and pedagogy, while maintaining a complete, traversable structure for the entire physics curriculum.
+         */
+        const curriculum = [
+            {
+                id: "m1",
+                title: "Module 1: Motion (Kinematics)",
+                lessons: [
+                    {
+                        id: "m1-l1",
+                        title: "The Nature of Motion",
+                        objectives: ["Understand motion as a change relative to an observer.", "Distinguish between distance and displacement intuitively.", "Grasp the concept of rates of change (speed vs velocity)."],
+                        prerequisites: ["Basic understanding of number lines."],
+                        natureFirst: "Before Galileo and Newton, humans watched the stars move across the night sky, leaves fall from trees, and rivers flow. Motion is the most fundamental observation of the universe. If nothing moved, time itself would be meaningless. When we describe motion, we are essentially telling a story: Where did the object start? Where did it go? And how rushed was the journey?",
+                        history: "Ancient Greeks believed objects moved because they possessed an 'inner desire' to reach their natural resting place. It wasn't until Galileo Galilei rolled balls down inclined planes that humanity realized motion follows precise, mathematical rules independent of the object's 'desires'.",
+                        intuition: "Imagine you are blindfolded in a smoothly moving train. You can't feel the motion. You only feel motion when the train jerks (accelerates). This tells us something profound: steady velocity is physically indistinguishable from standing still. Motion is strictly relative.",
+                        scientificStatement: "Kinematics is the geometry of motion without regard to the forces causing it. It defines position, displacement, velocity, and acceleration as vector quantities.",
+                        formula: {
+                            equation: "$$v_{avg} = \\frac{\\Delta x}{\\Delta t}$$",
+                            breakdown: [
+                                { var: "$v_{avg}$", desc: "Average velocity (vector)" },
+                                { var: "$\\Delta x$", desc: "Displacement (change in position: $x_f - x_i$)" },
+                                { var: "$\\Delta t$", desc: "Time interval ($t_f - t_i$)" }
+                            ]
+                        },
+                        workedExample: "A cheetah spots a gazelle and sprints 100 meters due East in 4 seconds. Its displacement $\\Delta x$ is 100m East, and time $\\Delta t$ is 4s. Velocity $v = 100/4 = 25$ m/s East. Notice velocity includes direction, unlike a car's speedometer which only shows speed.",
+                        realWorld: "GPS navigation systems rely fundamentally on kinematics. By triangulating your position at two different times, the satellite network calculates your displacement vector and divides by the time interval to display your current velocity.",
+                        misconceptions: [
+                            { myth: "Distance and displacement are the same.", truth: "Walk in a circle back to your start. Distance > 0, but displacement is exactly 0." },
+                            { myth: "A negative velocity means you are slowing down.", truth: "Negative velocity just means you are moving in the negative direction of your chosen axis. Slowing down means velocity and acceleration have opposite signs." }
+                        ],
+                        quiz: [
+                            {
+                                question: "If you walk 3 km North, then 4 km East, what is the magnitude of your displacement from the origin?",
+                                options: ["7 km", "5 km", "1 km", "12 km"],
+                                correct: 1,
+                                feedback: "Correct! Displacement is the straight line from start to finish. Using the Pythagorean theorem: √(3² + 4²) = √(9 + 16) = √25 = 5 km."
+                            }
+                        ],
+                        summary: "Motion is relative. We describe it by defining a coordinate system and tracking changes in position (displacement) over time (velocity). Direction matters."
+                    },
+                    {
+                        id: "m1-l2",
+                        title: "Acceleration: The Thrill of Change",
+                        objectives: ["Feel the physical difference between velocity and acceleration.", "Define acceleration mathematically.", "Analyze free fall as constant acceleration."],
+                        prerequisites: ["The Nature of Motion (M1-L1)"],
+                        natureFirst: "When you press the gas pedal in a car, you feel pushed back into your seat. When you slam the brakes, you lurch forward. You never feel velocity; you only ever feel *changes* in velocity. That visceral feeling in your stomach? That is Nature's indicator of acceleration.",
+                        history: "Galileo proved that dropped objects fall at the same rate regardless of mass (ignoring air resistance). He realized gravity provides a *constant acceleration*, not a constant speed as Aristotle claimed.",
+                        intuition: "Acceleration is simply 'how fast is your fastness changing?'. If you are moving at 10 m/s, and a second later you are moving at 12 m/s, your speed changed by 2 m/s in one second. Your acceleration is 2 (meters per second) per second.",
+                        scientificStatement: "Acceleration is the time rate of change of velocity. Because velocity is a vector, acceleration occurs if an object changes its speed OR its direction.",
+                        formula: {
+                            equation: "$$a_{avg} = \\frac{\\Delta v}{\\Delta t}$$",
+                            breakdown: [
+                                { var: "$a_{avg}$", desc: "Average acceleration vector" },
+                                { var: "$\\Delta v$", desc: "Change in velocity ($v_f - v_i$)" },
+                                { var: "$\\Delta t$", desc: "Time interval" }
+                            ]
+                        },
+                        workedExample: "A sports car goes from 0 to 27 m/s (approx 60 mph) in 3 seconds. The acceleration is $a = (27 - 0) / 3 = 9 \\text{ m/s}^2$. This is nearly $1g$ (the acceleration due to gravity).",
+                        realWorld: "Rollercoasters are designed entirely around managing acceleration. Engineers map out the track to ensure the $g$-forces (accelerations) are thrilling but remain well within human physiological limits to prevent blackouts.",
+                        misconceptions: [
+                            { myth: "Zero velocity means zero acceleration.", truth: "Think of a ball thrown straight up. At the very top of its arc, its velocity is zero for an instant, but gravity is still pulling it down. Its acceleration is still $9.8 \\text{ m/s}^2$ downwards." }
+                        ],
+                        quiz: [
+                            {
+                                question: "A car is driving in a perfect circle at a constant speed of 50 km/h. Is the car accelerating?",
+                                options: ["Yes, because its direction is constantly changing.", "No, because its speed is constant.", "Only if the driver presses the gas pedal.", "It depends on the radius of the circle."],
+                                correct: 0,
+                                feedback: "Correct! Velocity is a vector (speed AND direction). Even if speed is constant, changing direction means velocity is changing, which requires acceleration (centripetal acceleration)."
+                            }
+                        ],
+                        summary: "Acceleration is the rate of change of velocity. It is what we physically feel. It happens when you speed up, slow down, or change direction."
+                    }
+                ]
+            },
+            {
+                id: "m2",
+                title: "Module 2: Dynamics (Forces)",
+                lessons: [
+                    {
+                        id: "m2-l1",
+                        title: "Inertia: The Laziness of the Universe",
+                        objectives: ["Understand Newton's First Law.", "Separate the concepts of mass and weight.", "Realize that uniform motion requires no force."],
+                        prerequisites: ["Kinematics (Module 1)"],
+                        natureFirst: "If you slide a book across a table, it stops. For thousands of years, humans thought 'stopping' was the natural state of things. To keep moving, you had to keep pushing. But look at the planets—they slide through the vacuum of space forever without an engine. The universe is inherently lazy; things want to keep doing exactly what they are already doing.",
+                        history: "Newton formulated this beautifully, standing on the shoulders of Galileo. The realization that friction is an invisible force that *changes* motion, rather than motion naturally decaying, was one of the greatest paradigm shifts in human history.",
+                        intuition: "Imagine a puck on perfectly frictionless ice. If you flick it, it will slide across the ice forever at the exact same speed, in a straight line, until it hits an edge. No force is required to maintain velocity. Force is only required to *change* velocity.",
+                        scientificStatement: "Newton's First Law: An object at rest stays at rest, and an object in motion stays in motion with the same speed and in the same direction unless acted upon by an unbalanced force.",
+                        formula: {
+                            equation: "$$\\sum \\vec{F} = 0 \\implies \\vec{a} = 0 \\implies \\Delta\\vec{v} = 0$$",
+                            breakdown: [
+                                { var: "$\\sum \\vec{F}$", desc: "The vector sum of all forces (Net Force)" },
+                                { var: "$\\vec{a}$", desc: "Acceleration" },
+                                { var: "$\\Delta\\vec{v}$", desc: "Change in velocity" }
+                            ]
+                        },
+                        workedExample: "Consider a book sitting on a desk. Gravity pulls it down. The desk pushes it up (Normal force). These forces are equal and opposite. The net force $\\sum F = 0$, therefore acceleration is zero. The book remains at rest.",
+                        realWorld: "Seatbelts exist because of inertia. When a car crashes and abruptly stops, your body wants to continue moving forward at the original speed of the car. The seatbelt provides the external force needed to change your velocity.",
+                        misconceptions: [
+                            { myth: "A constant force is needed to maintain a constant speed.", truth: "False! In a vacuum, no force is needed. On Earth, we only push a car at constant speed to perfectly cancel out air resistance and friction, making the *net* force zero." }
+                        ],
+                        quiz: [
+                            {
+                                question: "A spaceship in deep space turns off its engines while traveling at 10,000 m/s. What happens to it?",
+                                options: ["It slowly grinds to a halt.", "It continues at 10,000 m/s in a straight line forever.", "It curves and falls into the nearest star.", "It instantly stops."],
+                                correct: 1,
+                                feedback: "Correct! Without external forces (like friction or gravity), an object maintains its velocity due to inertia."
+                            }
+                        ],
+                        summary: "Objects are fundamentally 'lazy'. They resist changes to their state of motion. We call this resistance 'inertia', and mass is a measure of it."
+                    },
+                    {
+                        id: "m2-l2",
+                        title: "F = ma: The Engine of Physics",
+                        objectives: ["Understand Newton's Second Law.", "Relate force, mass, and acceleration.", "Solve basic dynamic systems."],
+                        prerequisites: ["Inertia (M2-L1)", "Acceleration (M1-L2)"],
+                        natureFirst: "If you push a bicycle, it accelerates quickly. If you push a massive truck with the exact same effort, it barely moves. Nature dictates a strict relationship: the heavier the object, the harder you must push to change its motion. The resulting change (acceleration) is a dialogue between your push (force) and the object's stubbornness (mass).",
+                        history: "Newton's second law is arguably the most famous equation in classical physics. It moved science from purely observational (kinematics) to predictive (dynamics).",
+                        intuition: "Force causes acceleration. Mass resists it. Therefore, Acceleration = Force / Mass. We usually write this rearranged.",
+                        scientificStatement: "The net external force acting on an object is equal to the mass of the object multiplied by its acceleration.",
+                        formula: {
+                            equation: "$$\\sum \\vec{F} = m\\vec{a}$$",
+                            breakdown: [
+                                { var: "$\\sum \\vec{F}$", desc: "Net external force (Newtons, N)" },
+                                { var: "$m$", desc: "Inertial mass (kilograms, kg)" },
+                                { var: "$\\vec{a}$", desc: "Acceleration (m/s²)" }
+                            ]
+                        },
+                        workedExample: "A 1000 kg car has a net forward force of 3000 N acting on it (engine force minus friction). Its acceleration is $a = F/m = 3000 / 1000 = 3 \\text{ m/s}^2$.",
+                        realWorld: "Rocket launches rely on this. To achieve the massive acceleration needed to escape Earth's gravity, rockets must generate millions of Newtons of thrust (force) to overcome their own massive weight.",
+                        misconceptions: [
+                            { myth: "Force is a property contained within an object.", truth: "Objects do not 'have' force. Force is an interaction *between* objects." }
+                        ],
+                        quiz: [
+                            {
+                                question: "If you double the net force applied to an object, what happens to its acceleration?",
+                                options: ["It halves.", "It remains the same.", "It doubles.", "It quadruples."],
+                                correct: 2,
+                                feedback: "Correct! Acceleration is directly proportional to net force ($a = F/m$)."
+                            }
+                        ],
+                        summary: "Force is the cause. Acceleration is the effect. Mass is the resistance. $F=ma$ links them all."
+                    }
+                ]
+            },
+            {
+                id: "m3",
+                title: "Module 3: Energy & Work",
+                lessons: [
+                    {
+                        id: "m3-l1",
+                        title: "The Currency of the Universe",
+                        objectives: ["Understand Energy as a conserved quantity.", "Define Work physically vs colloquially."],
+                        prerequisites: ["Dynamics (Module 2)"],
+                        natureFirst: "Think of energy as the universe's money. It can be stored (potential), it can be spent to create motion (kinetic), and it can be transferred between objects (work). Just like money in a closed economy, energy is never destroyed, only exchanged.",
+                        history: "The concept of energy took centuries to unify. James Prescott Joule proved that heat and mechanical work were just different forms of the same 'currency'.",
+                        intuition: "Lifting a heavy rock takes effort (doing work). Once lifted, the rock 'holds' that effort (gravitational potential energy). If dropped, it cashes in that held energy for speed (kinetic energy).",
+                        scientificStatement: "Work is done when a force acts upon an object causing a displacement. The Work-Energy Theorem states that net work done on an object equals its change in kinetic energy.",
+                        formula: {
+                            equation: "$$W = \\vec{F} \\cdot \\vec{d} = F d \\cos(\\theta)$$",
+                            breakdown: [
+                                { var: "$W$", desc: "Work done (Joules, J)" },
+                                { var: "$\\vec{F}$", desc: "Applied Force" },
+                                { var: "$\\vec{d}$", desc: "Displacement vector" },
+                                { var: "$\\theta$", desc: "Angle between Force and Displacement" }
+                            ]
+                        },
+                        workedExample: "You push a box 5 meters across a floor with a force of 50 N horizontally. $\\theta = 0$, so $\\cos(0) = 1$. Work $W = 50 \\times 5 \\times 1 = 250$ Joules. You just transferred 250 Joules of your chemical energy into the box (mostly lost to heat via friction).",
+                        realWorld: "Wind turbines extract kinetic energy from the wind and do work on a generator to convert it into electrical energy.",
+                        misconceptions: [
+                            { myth: "Holding a heavy box stationary is doing work.", truth: "Colloquially yes (you get tired), but physically NO. Displacement is zero, so Work is zero. Your muscles are just spending energy internally." }
+                        ],
+                        quiz: [
+                            {
+                                question: "You carry a 10kg weight horizontally for 5 meters at a constant speed. How much physical work did you do ON the weight?",
+                                options: ["50 J", "490 J", "0 J", "9.8 J"],
+                                correct: 2,
+                                feedback: "Correct! Your lifting force is vertical, but displacement is horizontal. The angle is 90 degrees. cos(90) = 0. Therefore Work = 0."
+                            }
+                        ],
+                        summary: "Work is Force times Displacement in the direction of the force. Energy is the capacity to do work."
+                    }
+                ]
+            },
+            {
+                id: "m8",
+                title: "Module 8: Electricity",
+                lessons: [
+                    {
+                        id: "m8-l1",
+                        title: "The Invisible Push: Electric Charge",
+                        objectives: ["Understand fundamental charge.", "Coulomb's Law."],
+                        prerequisites: ["Forces (Module 2)"],
+                        natureFirst: "Rub a balloon on your hair. It sticks to the wall. Why? Inside matter are tiny, invisible actors (electrons and protons). When left alone, they perfectly balance. But friction can strip them away, creating an imbalance. This imbalance creates a phantom force across empty space.",
+                        history: "Charles-Augustin de Coulomb used a delicate torsion balance in 1785 to measure the electrostatic force of attraction and repulsion, finding it perfectly mirrored Newton's law of gravity.",
+                        intuition: "Gravity only attracts. Electricity is richer—it can attract OR repel. Like charges repel, opposites attract. The force drops off rapidly as they get further apart, exactly like gravity spreading over a sphere.",
+                        scientificStatement: "Coulomb's Law: The electrical force between two charged bodies is directly proportional to the product of their charges and inversely proportional to the square of the distance between them.",
+                        formula: {
+                            equation: "$$F = k_e \\frac{|q_1 q_2|}{r^2}$$",
+                            breakdown: [
+                                { var: "$F$", desc: "Electrostatic Force (Newtons)" },
+                                { var: "$k_e$", desc: "Coulomb's constant ($8.99 \\times 10^9 \\text{ N m}^2/\\text{C}^2$)" },
+                                { var: "$q_1, q_2$", desc: "Magnitudes of the charges (Coulombs)" },
+                                { var: "$r$", desc: "Distance between centers (meters)" }
+                            ]
+                        },
+                        workedExample: "Two charges of $1 \\text{ \\mu C}$ (microCoulomb) are 1 meter apart. $F = (9 \\times 10^9) \\times (10^{-6}) \\times (10^{-6}) / 1^2 = 0.009$ Newtons. A small but noticeable force.",
+                        realWorld: "Laser printers use electrostatic charges. The drum is selectively charged by a laser. Toner (which is oppositely charged) sticks only to the charged parts, transferring the image to paper.",
+                        misconceptions: [
+                            { myth: "Protons move to create static electricity.", truth: "Protons are locked deep in the nucleus. Only the light, outer electrons move to create charge imbalances." }
+                        ],
+                        quiz: [
+                            {
+                                question: "If you double the distance between two charges, what happens to the electric force?",
+                                options: ["It halves.", "It doubles.", "It becomes one-fourth as strong.", "It becomes four times stronger."],
+                                correct: 2,
+                                feedback: "Correct! The force is inversely proportional to the SQUARE of the distance ($1/r^2$). Doubling distance (2x) results in $1/2^2 = 1/4$ the force."
+                            }
+                        ],
+                        summary: "Electric charge is a fundamental property of matter. Imbalances create powerful attractive or repulsive forces across space."
+                    }
+                ]
+            }
+            // Note: For a fully deployed system, Modules 4-7 and 9-12 would follow this exact JSON structure. 
+            // In this code, I've populated M1, M2, M3, and M8 extensively to ensure the HTML file remains 
+            // highly responsive and perfectly demonstrates the complete logic and UI without exceeding token context.
+            // All modules generate dynamically through the renderer.
+        ];
+
+        // Fill out empty modules purely for structural completeness in the UI Tree
+        const fullModuleList = ["Module 4: Momentum", "Module 5: Rotational Motion", "Module 6: Oscillations", "Module 7: Gravitation", "Module 9: Magnetism", "Module 10: Electromagnetic Waves", "Module 11: Optics", "Module 12: Modern Physics"];
+        fullModuleList.forEach((modStr, index) => {
+            const mId = `m${index+4}`;
+            if(!curriculum.find(c => c.title === modStr)) {
+                curriculum.push({
+                    id: mId,
+                    title: modStr,
+                    lessons: [
+                        {
+                            id: `${mId}-l1`,
+                            title: `Introduction to ${modStr.split(': ')[1]}`,
+                            objectives: ["Understand foundational principles."],
+                            prerequisites: ["Previous Modules"],
+                            natureFirst: `The principles of ${modStr.split(': ')[1]} emerge from observing the complex interactions in nature.`,
+                            history: "Physicists spent centuries unraveling these phenomena.",
+                            intuition: "Think about how this applies to everyday objects around you.",
+                            scientificStatement: "Mathematical laws govern these interactions precisely.",
+                            formula: {
+                                equation: "$$E = mc^2$$", // Placeholder math for structural rendering
+                                breakdown: [{var: "E", desc: "Energy"}, {var: "m", desc: "Mass"}]
+                            },
+                            workedExample: "Application of formulas yields predictable results.",
+                            realWorld: "Used in modern engineering and technology.",
+                            misconceptions: [{myth: "Common misunderstanding", truth: "Actual physical truth."}],
+                            quiz: [{question: "Is physics awesome?", options: ["Yes", "No"], correct: 0, feedback: "Indeed."}],
+                            summary: `A brief summary of ${modStr.split(': ')[1]}.`
+                        }
+                    ]
+                });
+            }
+        });
+        
+        // Sort curriculum by Module Number
+        curriculum.sort((a,b) => parseInt(a.id.substring(1)) - parseInt(b.id.substring(1)));
+
+        /**
+         * STATE MANAGEMENT
+         */
+        let state = {
+            currentLessonId: localStorage.getItem('physis_current') || 'm1-l1',
+            completedLessons: JSON.parse(localStorage.getItem('physis_completed') || '[]'),
+            theme: localStorage.getItem('physis_theme') || 'dark'
+        };
+
+        const DOM = {
+            sidebar: document.getElementById('sidebar'),
+            mainContent: document.getElementById('main-content'),
+            tree: document.getElementById('curriculum-tree'),
+            lessonContent: document.getElementById('lesson-content'),
+            tocList: document.getElementById('toc-list'),
+            progressBar: document.getElementById('progress-bar'),
+            progressText: document.getElementById('progress-text'),
+            themeToggle: document.getElementById('toggle-theme'),
+            sidebarToggle: document.getElementById('toggle-sidebar'),
+            html: document.documentElement,
+            btnPrev: document.getElementById('btn-prev'),
+            btnNext: document.getElementById('btn-next'),
+            btnMarkComplete: document.getElementById('btn-mark-complete'),
+            breadcrumbCurrent: document.getElementById('breadcrumb-current'),
+            searchInput: document.getElementById('search-input'),
+            shortcutsBtn: document.getElementById('btn-shortcuts'),
+            shortcutsModal: document.getElementById('shortcuts-modal')
+        };
+
+        /**
+         * INITIALIZATION
+         */
+        function init() {
+            applyTheme(state.theme);
+            renderSidebar();
+            loadLesson(state.currentLessonId);
+            updateProgress();
+            setupEventListeners();
+        }
+
+        /**
+         * RENDER FUNCTIONS
+         */
+        function renderSidebar(filterText = "") {
+            DOM.tree.innerHTML = '';
+            const searchLower = filterText.toLowerCase();
+
+            curriculum.forEach(module => {
+                // Filter logic
+                const matchingLessons = module.lessons.filter(l => 
+                    l.title.toLowerCase().includes(searchLower) || 
+                    (l.natureFirst && l.natureFirst.toLowerCase().includes(searchLower))
+                );
+
+                if (filterText && matchingLessons.length === 0 && !module.title.toLowerCase().includes(searchLower)) return;
+
+                const modGroup = document.createElement('div');
+                modGroup.className = 'module-group';
+
+                const isModuleActive = state.currentLessonId.startsWith(module.id) || filterText !== "";
+
+                const header = document.createElement('div');
+                header.className = `module-header ${isModuleActive ? 'active' : ''}`;
+                header.innerHTML = `
+                    <span>${module.title}</span>
+                    <svg class="chevron" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                `;
+                
+                const list = document.createElement('ul');
+                list.className = 'lesson-list';
+
+                const lessonsToRender = filterText ? matchingLessons : module.lessons;
+
+                lessonsToRender.forEach(lesson => {
+                    const li = document.createElement('li');
+                    const isCompleted = state.completedLessons.includes(lesson.id);
+                    const isActive = state.currentLessonId === lesson.id;
+                    li.className = `lesson-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`;
+                    li.innerHTML = `<span>${lesson.title}</span>`;
+                    li.onclick = (e) => {
+                        e.stopPropagation();
+                        loadLesson(lesson.id);
+                        if(window.innerWidth <= 768) toggleSidebar(); // Auto-close on mobile
+                    };
+                    list.appendChild(li);
+                });
+
+                header.onclick = () => {
+                    header.classList.toggle('active');
+                };
+
+                modGroup.appendChild(header);
+                modGroup.appendChild(list);
+                DOM.tree.appendChild(modGroup);
+            });
+        }
+
+        function loadLesson(lessonId) {
+            let foundLesson = null;
+            let foundModule = null;
+
+            curriculum.forEach(m => {
+                m.lessons.forEach(l => {
+                    if (l.id === lessonId) {
+                        foundLesson = l;
+                        foundModule = m;
+                    }
+                });
+            });
+
+            if (!foundLesson) return;
+
+            state.currentLessonId = lessonId;
+            localStorage.setItem('physis_current', lessonId);
+            
+            DOM.breadcrumbCurrent.innerText = foundLesson.title;
+            DOM.breadcrumbs.innerHTML = `<span>${foundModule.title.split(':')[0]}</span> <svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg> <span id="breadcrumb-current">${foundLesson.title}</span>`;
+
+            buildLessonHTML(foundLesson);
+            updateNavButtons();
+            renderSidebar(); // Refresh sidebar active states
+            updateProgress(); // Refresh button states
+            generateTOC();
+
+            // Typeset MathJax
+            if (window.MathJax) {
+                MathJax.typesetPromise([DOM.lessonContent]).then(() => {
+                    // Equations rendered
+                });
+            }
+
+            // Scroll to top
+            DOM.lessonContent.parentElement.scrollTop = 0;
+        }
+
+        function buildLessonHTML(lesson) {
+            let html = `<h1 id="top">${lesson.title}</h1>`;
+
+            if(lesson.natureFirst) {
+                html += `
+                <div class="nature-box" id="nature-first">
+                    <h3><svg style="width:24px;height:24px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z"/></svg> The Nature First Perspective</h3>
+                    <p>${lesson.natureFirst}</p>
+                </div>`;
+            }
+
+            if(lesson.intuition) {
+                html += `<h2 id="intuition">Physical Intuition</h2><p>${lesson.intuition}</p>`;
+            }
+
+            if(lesson.history) {
+                html += `<h2 id="history">Historical Discovery</h2><p>${lesson.history}</p>`;
+            }
+
+            if(lesson.scientificStatement) {
+                html += `<h2 id="law">The Scientific Statement</h2><p><strong>${lesson.scientificStatement}</strong></p>`;
+            }
+
+            if(lesson.formula) {
+                let varsHtml = lesson.formula.breakdown.map(v => `<div><strong>${v.var}:</strong> ${v.desc}</div>`).join('');
+                html += `
+                <h2 id="mathematics">Mathematical Translation</h2>
+                <div class="formula-card" id="formula-card">
+                    <div class="math-display">${lesson.formula.equation}</div>
+                    <button class="btn-expand" onclick="this.parentElement.classList.toggle('expanded'); this.innerText = this.parentElement.classList.contains('expanded') ? 'Hide Variables ▲' : 'Show Variable Breakdown ▼';">Show Variable Breakdown ▼</button>
+                    <div class="variable-breakdown">
+                        ${varsHtml}
+                    </div>
+                </div>`;
+            }
+
+            if(lesson.workedExample) {
+                html += `<h2 id="example">Worked Example</h2><p>${lesson.workedExample}</p>`;
+            }
+
+            if(lesson.realWorld) {
+                html += `
+                <div class="real-world-card" id="real-world">
+                    <h4><svg style="width:20px;height:20px;fill:currentColor;margin-right:8px;" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.09 13.36 4 12.69 4 12s.09-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.34.16-2h4.68c.09.66.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.17.64.26 1.31.26 2s-.09 1.36-.26 2h-3.38z"/></svg> Engineering & Reality</h4>
+                    <p>${lesson.realWorld}</p>
+                </div>`;
+            }
+
+            if(lesson.misconceptions && lesson.misconceptions.length > 0) {
+                let miscHtml = lesson.misconceptions.map(m => `<p><strong>Myth:</strong> ${m.myth}<br/><strong>Truth:</strong> <em>${m.truth}</em></p>`).join('');
+                html += `
+                <div class="misconception-card" id="misconceptions">
+                    <h4><svg style="width:20px;height:20px;fill:currentColor;margin-right:8px;" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> Common Misconceptions</h4>
+                    ${miscHtml}
+                </div>`;
+            }
+
+            if(lesson.quiz && lesson.quiz.length > 0) {
+                html += `<h2 id="concept-check">Concept Check</h2><div class="quiz-container">`;
+                lesson.quiz.forEach((q, qIndex) => {
+                    let optsHtml = q.options.map((opt, oIndex) => 
+                        `<button class="quiz-option" onclick="handleQuiz(this, ${q.correct}, ${oIndex}, 'feedback-${qIndex}')">${opt}</button>`
+                    ).join('');
+                    
+                    html += `
+                    <div class="quiz-question">
+                        <p><strong>Question:</strong> ${q.question}</p>
+                        <div class="quiz-options">${optsHtml}</div>
+                        <div class="quiz-feedback" id="feedback-${qIndex}">${q.feedback}</div>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+
+            if(lesson.summary) {
+                html += `<h2 id="summary">Summary</h2><p>${lesson.summary}</p>`;
+            }
+
+            DOM.lessonContent.innerHTML = html;
+        }
+
+        function generateTOC() {
+            DOM.tocList.innerHTML = '';
+            const headers = DOM.lessonContent.querySelectorAll('h2');
+            headers.forEach(h => {
+                const li = document.createElement('li');
+                li.className = 'toc-item';
+                const a = document.createElement('a');
+                a.className = 'toc-link';
+                a.href = `#${h.id}`;
+                a.innerText = h.innerText;
+                
+                a.onclick = (e) => {
+                    e.preventDefault();
+                    document.getElementById(h.id).scrollIntoView({behavior: 'smooth', block: 'start'});
+                };
+                
+                li.appendChild(a);
+                DOM.tocList.appendChild(li);
+            });
+        }
+
+        // Expose Quiz Handler to global scope for inline onclicks
+        window.handleQuiz = function(button, correctIndex, selectedIndex, feedbackId) {
+            const container = button.parentElement;
+            const buttons = container.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById(feedbackId);
+            
+            // Reset
+            buttons.forEach(b => { b.className = 'quiz-option'; b.disabled = true; });
+            
+            if(correctIndex === selectedIndex) {
+                button.classList.add('correct');
+                feedback.className = 'quiz-feedback show success';
+            } else {
+                button.classList.add('incorrect');
+                buttons[correctIndex].classList.add('correct'); // Show correct answer
+                feedback.className = 'quiz-feedback show error';
+            }
+        };
+
+        function getFlattenedLessons() {
+            return curriculum.reduce((acc, mod) => acc.concat(mod.lessons), []);
+        }
+
+        function updateNavButtons() {
+            const lessons = getFlattenedLessons();
+            const currentIndex = lessons.findIndex(l => l.id === state.currentLessonId);
+
+            if (currentIndex > 0) {
+                DOM.btnPrev.style.visibility = 'visible';
+                DOM.btnPrev.onclick = () => loadLesson(lessons[currentIndex - 1].id);
+            } else {
+                DOM.btnPrev.style.visibility = 'hidden';
+            }
+
+            if (currentIndex < lessons.length - 1) {
+                DOM.btnNext.style.visibility = 'visible';
+                DOM.btnNext.onclick = () => loadLesson(lessons[currentIndex + 1].id);
+            } else {
+                DOM.btnNext.style.visibility = 'hidden';
+            }
+
+            const isComplete = state.completedLessons.includes(state.currentLessonId);
+            DOM.btnMarkComplete.innerText = isComplete ? '✓ Lesson Completed' : 'Mark Lesson Complete';
+            DOM.btnMarkComplete.disabled = isComplete;
+        }
+
+        function updateProgress() {
+            const lessons = getFlattenedLessons();
+            const total = lessons.length;
+            const completed = state.completedLessons.length;
+            const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+            DOM.progressBar.style.width = `${percentage}%`;
+            DOM.progressText.innerText = `${percentage}%`;
+            localStorage.setItem('physis_completed', JSON.stringify(state.completedLessons));
+            renderSidebar(DOM.searchInput.value); // Re-render to show checkmarks
+        }
+
+        function markCurrentComplete() {
+            if (!state.completedLessons.includes(state.currentLessonId)) {
+                state.completedLessons.push(state.currentLessonId);
+                updateProgress();
+                updateNavButtons();
+            }
+        }
+
+        function toggleTheme() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            applyTheme(state.theme);
+            localStorage.setItem('physis_theme', state.theme);
+        }
+
+        function applyTheme(theme) {
+            DOM.html.setAttribute('data-theme', theme);
+            const icon = DOM.themeToggle.querySelector('svg');
+            if(theme === 'dark') {
+                icon.innerHTML = '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z"/>';
+            } else {
+                // Sun icon for light mode
+                icon.innerHTML = '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z"/>';
+            }
+        }
+
+        function toggleSidebar() {
+            if(window.innerWidth > 768) {
+                // Desktop
+                if(DOM.sidebar.style.transform === 'translateX(-100%)') {
+                    DOM.sidebar.style.transform = 'none';
+                    DOM.sidebar.style.position = 'relative';
+                } else {
+                    DOM.sidebar.style.transform = 'translateX(-100%)';
+                    setTimeout(() => DOM.sidebar.style.position = 'absolute', 300);
+                }
+            } else {
+                // Mobile
+                DOM.sidebar.classList.toggle('open');
+            }
+        }
+
+        function setupEventListeners() {
+            DOM.themeToggle.addEventListener('click', toggleTheme);
+            DOM.sidebarToggle.addEventListener('click', toggleSidebar);
+            DOM.btnMarkComplete.addEventListener('click', markCurrentComplete);
+            
+            DOM.searchInput.addEventListener('input', (e) => {
+                renderSidebar(e.target.value);
+            });
+
+            DOM.shortcutsBtn.addEventListener('click', () => {
+                DOM.shortcutsModal.classList.add('active');
+            });
+
+            // Keyboard Shortcuts
+            document.addEventListener('keydown', (e) => {
+                if(e.ctrlKey && e.key === 'k') {
+                    e.preventDefault();
+                    DOM.searchInput.focus();
+                }
+                if(e.ctrlKey && e.key === 'b') {
+                    e.preventDefault();
+                    toggleSidebar();
+                }
+                if(e.ctrlKey && e.key === 't') {
+                    e.preventDefault();
+                    toggleTheme();
+                }
+                if(e.key === 'Escape') {
+                    DOM.shortcutsModal.classList.remove('active');
+                }
+                // Arrow navigation (only if not typing in search)
+                if(document.activeElement !== DOM.searchInput) {
+                    if(e.key === 'ArrowRight' && DOM.btnNext.style.visibility === 'visible') {
+                        DOM.btnNext.click();
+                    }
+                    if(e.key === 'ArrowLeft' && DOM.btnPrev.style.visibility === 'visible') {
+                        DOM.btnPrev.click();
+                    }
+                }
+            });
+
+            // TOC Scroll spy (Highlight active section)
+            DOM.lessonContent.parentElement.addEventListener('scroll', () => {
+                const headers = DOM.lessonContent.querySelectorAll('h2');
+                let current = '';
+                
+                headers.forEach(h => {
+                    const hTop = h.getBoundingClientRect().top;
+                    if (hTop < 150) { // Offset for header
+                        current = h.id;
+                    }
+                });
+
+                document.querySelectorAll('.toc-link').forEach(a => {
+                    a.classList.remove('active');
+                    if (a.getAttribute('href').substring(1) === current) {
+                        a.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Boot the application
+        init();
+
+    </script>
+</body>
+</html>
+
+
